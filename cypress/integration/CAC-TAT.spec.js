@@ -1,6 +1,9 @@
 /// <reference types="Cypress" />
 
 describe('Central de Atendimento ao Cliente TAT', function() {
+
+    const THREE_SECONDS_IN_MS= 3000
+
     beforeEach(function()   {
      cy.visit('./src/index.html')
 
@@ -12,22 +15,29 @@ describe('Central de Atendimento ao Cliente TAT', function() {
     })
 
 
-
+    Cypress._.times(10, () => {
     it('Preenche os campos obrigatórios e envia o formulário', function() {
 
         const longText = 'Teste,Teste,Teste,Teste,Teste,Teste,Teste,Teste,Teste,Teste,Teste,Teste,Teste,Teste,'
+        cy.clock()
         cy.get('#firstName').type('Patrick')
         cy.get('#lastName').type('Vieira')
         cy.get('#email').type('patrick_zardo@hotmail.com')
         cy.get('#open-text-area').type(longText, {delay:0})
         cy.contains('button','Enviar').click()
+
         cy.get('.success').should('be.visible')
 
+        cy.tick (THREE_SECONDS_IN_MS)
+
+        cy.get('.success').should('not.be.visible')
+
     })
+})
 
-
+    Cypress._.times(5, function() {
     it('Exibe mensagem de erro ao submeter o formulário com um e-mail com formatação inválida', function() {
-
+    cy.clock()
     cy.get('#firstName').type('Patrick')
     cy.get('#lastName').type('Vieira')
     cy.get('#email').type('patrick_zardo@hotmail,com')
@@ -35,6 +45,12 @@ describe('Central de Atendimento ao Cliente TAT', function() {
     cy.contains('button','Enviar').click()
     cy.get('.error').should('be.visible')
 
+    cy.tick(THREE_SECONDS_IN_MS)
+
+    cy.get('.error').should('not.be.visible')
+
+
+    })
 })
 
 
@@ -97,9 +113,15 @@ it('Preenche e limpa os campos nome, sobrenome, e-mail e telefone', function() {
 
 })
 
-    it('Envia o formulário com sucesso usando um comando customizado', function() {
+    it ('Envia o formulário com sucesso usando um comando customizado', function() {
+    cy.clock ()
     cy.fillMandatoryFieldsAndSubmit()
     cy.get('.success').should('be.visible')
+
+    cy.tick(THREE_SECONDS_IN_MS)
+
+    cy.get('.success').should('not.be.visible')
+    
     
     
  })
